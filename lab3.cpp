@@ -26,6 +26,7 @@ int main(){
 	infile.open("")
 	string readfile( string )
  process scheduler()
+  int waitingtime[];
 
 }
 
@@ -79,4 +80,9 @@ void sheduler(){
 
 }
 
+
+for(int i =0 ; i < waitingtime.size() ; ++i)
+{
+	waitingtime[i+1] += waitingtime[i]
+}
 
