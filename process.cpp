@@ -7,12 +7,14 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
 
 using namespace std;
 
 class Process{
 public:
 	string PID;
+	thread_t thrd;
 	int CPUburst;
 	int priority;
 	int ArrivalTime;
@@ -30,8 +32,6 @@ public:
 		this->TimesRun = TimesRun;
 		this->HowMuchTime = HowMuchTime;
 	}
-
-
 
 };
 
