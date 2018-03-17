@@ -14,6 +14,35 @@
 
 using namespace std;
 
+int main(int argc, char *argv[])
+{
+	///reading the config.dat file
+   char* fileName = "/Users/Tooba Baig/desktop/pbs_input.txt";
+   ReadFile(fileName);
+   system("PAUSE");
+}
+
+ void ReadFile( char* fileName)
+{
+
+	ifstream InputFile (fileName); 
+	ofstream output;  
+
+	 //Open pbs_input.txt file
+   output.open("/Users/Tooba Baig/desktop/pbs_input.txt", std::ios_base::app);
+
+  // Exit program if ifstream could not open file
+   if (!InputFile) 
+   {
+       cout << "File could not be opened" << endl;
+       exit(1);
+   }
+
+ //Closing the files
+   InputFile.close();
+   output.close();
+}  
+
 Process[] a;
 Process[] b;
 
@@ -85,4 +114,3 @@ for(int i =0 ; i < waitingtime.size() ; ++i)
 {
 	waitingtime[i+1] += waitingtime[i]
 }
-
