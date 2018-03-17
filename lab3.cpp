@@ -16,7 +16,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	///reading the config.dat file
+	///reading the input file
    char* fileName = "/Users/Tooba Baig/desktop/pbs_input.txt";
    ReadFile(fileName);
    system("PAUSE");
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	ifstream InputFile (fileName); 
 	ofstream output;  
 
-	 //Open pbs_input.txt file
+	 //Open/output pbs_input.txt file
    output.open("/Users/Tooba Baig/desktop/pbs_input.txt", std::ios_base::app);
 
   // Exit program if ifstream could not open file
