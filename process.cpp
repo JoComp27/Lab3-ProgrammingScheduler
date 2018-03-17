@@ -11,46 +11,74 @@
 
 using namespace std;
 
-class Process{
-public:
+class Process {
+private:
+	Process * ptr;
 
-	//attributes
+//attributes
 	string PID;
-	thread_t thrd;
-	int CPUburst;
+	int cpuBurst;
 	int priority;
-	int ArrivalTime;
-	int TimeLeft;
-	int TimesRun;
-	int HowMuchTime;
+	int arrivalTime;
+	int timeLeft;
+	int timesRun;
+	int howMuchTime;
+
+public:
+	thread thrd;
 
 	~Process() //destructor
 	{}
 
 // Default Constructor
-Process()
-{
+Process() {
 	PID = "NULL";
 	thrd; //how to initialize the thread
-	CPUburst=0;
+	cpuBurst =0;
 	priority=0;
-	ArrivalTime=0;
-	TimeLeft=0;
-	TimesRun=0;
-	HowMuchTime=0;
+	arrivalTime=0;
+	timeLeft =0;
+	timesRun=0;
+	howMuchTime=0;
 }
     //parameterized constructor
-Process(string PID, int CPUburst, int priority, int ArrivalTime, int TimeLeft,
-			int TimesRun, int HowMuchTime)
-{
+Process(string PID, int CPUburst, int priority, int ArrivalTime, int TimeLeft, int TimesRun, int HowMuchTime) {
 		this->PID = PID;
-		this->CPUburst = CPUburst;
+		this->cpuBurst = CPUburst;
 		this->priority = priority;
-		this->ArrivalTime = ArrivalTime;
-		this->TimeLeft = TimeLeft;
-		this->TimesRun = TimesRun;
-		this->HowMuchTime = HowMuchTime;
+		this->arrivalTime = ArrivalTime;
+		this->timeLeft = TimeLeft;
+		this->timesRun = TimesRun;
+		this->howMuchTime = HowMuchTime;
 	}
+
+string getPID() {
+	return PID;
+}
+
+int getCPUBurst() {
+	return cpuBurst;
+}
+
+int getPriority() {
+	return priority;
+}
+
+int getArrivalTime() {
+	return arrivalTime;
+}
+
+int getTimeLeft() {
+	return timeLeft;
+}
+
+int getTimesRun() {
+	return timesRun;
+}
+
+int getHowMuchTime() {
+	return howMuchTime;
+}
 
 };
 

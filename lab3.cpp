@@ -4,15 +4,25 @@
  *  Created on: Mar 13, 2018
  *      Author: Administrateur
  */
+
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <thread>
 #include <stdlib.h>
 #include <signal.h>
-#include "process.cpp";
+#include "ProcessQueue.cpp";
 
 using namespace std;
+
+int currentActiveQueue = 0;
+bool isDone = false;
+
+void ReadFile(char* filename);
+int changePriority(Process a);
+int calculateTimeQ(Process a);
+void sheduler(ProcessQueue* a, ProcessQueue* b);
+
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +30,18 @@ int main(int argc, char *argv[])
    char* fileName = "/Users/Tooba Baig/desktop/pbs_input.txt";
    ReadFile(fileName);
    system("PAUSE");
+
+   ProcessQueue a = ProcessQueue(true);
+   ProcessQueue b = ProcessQueue(false);
+
+   while (!isDone) {
+	   //Check if new stuff need to be added to the queue
+
+	   //Go through the scheduler algorithm
+
+	   // Add +100 to the clock
+   }
+
 }
 
  void ReadFile( char* fileName)
@@ -43,21 +65,6 @@ int main(int argc, char *argv[])
    output.close();
 }  
 
-Process[] a;
-Process[] b;
-
-int currentActiveQueue = 0;
-
-int main(){
-	void resumeprocess();
-	void pauseprocess();
-	ifstream infile;
-	infile.open("")
-	string readfile( string )
- process scheduler()
-  int waitingtime[];
-
-}
 
 int changePriority(Process a){
 	thread t1;
@@ -76,15 +83,16 @@ int calculateTimeQ(Process a){
 
 }
 
-void sheduler(){
+void sheduler(ProcessQueue* a, ProcessQueue* b){
 
-	if(a.getActive()){
-		if(a.getSize() == 0 && !itemWasInserted){
+	if(a->getIsActive()){
+		if(a->getLength() == 0 && !itemWasInserted){
 			return;
 		}
-		elseif(a.getSize() == 0){
-			a.setActive(false);
-			b.setActive(true);
+		else if(a->getLength() == 0){
+			a->setIsActive(false);
+			b->setIsActive(true);
+			b->sort();
 		}
 		else{
 
@@ -94,12 +102,13 @@ void sheduler(){
 
 }
 	else{
-		if(b,getSize() == 0 && !itemWasInserted){
+		if(b->getLength() == 0 && !itemWasInserted){
 			return;
 		}
-		elseif(b.getSize() == 0){
-					b.setActive(false);
-					a.setActive(true);
+		else if(b->getLength() == 0){
+					b->setIsActive(false);
+					a->setIsActive(true);
+					a->sort();
 				}
 		else{
 
