@@ -15,33 +15,64 @@
 
 using namespace std;
 
-int currentActiveQueue = 0;
+int currentTime = 0;
 bool isDone = false;
+bool itemWasInserted = false;
+
+deque<Process> listOfProcesses;
+
+ ProcessQueue a = ProcessQueue(true);
+ ProcessQueue b = ProcessQueue(false);
 
 void ReadFile(char* filename);
 int changePriority(Process a);
 int calculateTimeQ(Process a);
 void sheduler(ProcessQueue* a, ProcessQueue* b);
-
+void ProcessInsertion();
 
 int main(int argc, char *argv[])
 {
 	///reading the input file
    char* fileName = "/Users/Tooba Baig/desktop/pbs_input.txt";
    ReadFile(fileName);
+
    system("PAUSE");
 
-   ProcessQueue a = ProcessQueue(true);
-   ProcessQueue b = ProcessQueue(false);
+
 
    while (!isDone) {
 	   //Check if new stuff need to be added to the queue
-
+	   ProcessInsertion();
+		
 	   //Go through the scheduler algorithm
 
+
+
 	   // Add +100 to the clock
+	   currentTime += 100;
    }
 
+}
+
+void ProcessInsertion() {
+
+	if (currentTime == listOfProcesses.front().getArrivalTime()) {
+
+		if (!itemWasInserted) {
+			itemWasInserted = true;
+		}
+
+		if (a.getIsActive()) {
+			b.add(listOfProcesses.front());
+		}
+		else {
+			a.add(listOfProcesses.front());
+		}
+
+		cout << "Time " << currentTime << ", " << listOfProcesses.front().getPID << ", Arrived" << endl;
+		listOfProcesses.pop_front();
+
+	}
 }
 
  void ReadFile( char* fileName)
@@ -74,33 +105,42 @@ int changePriority(Process a){
 
 int calculateTimeQ(Process a){
 
-	if(a.priority < 100){
-		return ((140-a.priority) * 20);
+	if(a.getPriority() < 100){
+		return ((140-a.getPriority()) * 20);
 	}
 	else{
-		return ((140-a.priority) * 5);
+		return ((140-a.getPriority()) * 5);
 	}
 
 }
 
 void sheduler(ProcessQueue* a, ProcessQueue* b){
 
-	if(a->getIsActive()){
-		if(a->getLength() == 0 && !itemWasInserted){
+	if (a->getIsActive()) {
+		if (a->getLength() == 0 && !itemWasInserted) {
 			return;
 		}
-		else if(a->getLength() == 0){
+		else if (a->getLength() == 0) {
 			a->setIsActive(false);
 			b->setIsActive(true);
 			b->sort();
 		}
-		else{
+		else {
 
+			//run a->getTop()
+
+			a->incrTimesRun();
+
+			if (a->getTop().getTimesRun() == 2) {
+				//Recalculate task priority
+				a->setTimesRun(0);
+			}
+
+			b->add(a->getTop());
+			a->removeTop();
 		}
 
-		if()
-
-}
+	}
 	else{
 		if(b->getLength() == 0 && !itemWasInserted){
 			return;
@@ -110,8 +150,19 @@ void sheduler(ProcessQueue* a, ProcessQueue* b){
 					a->setIsActive(true);
 					a->sort();
 				}
-		else{
+		else{ //List is not empty
 
+			//run b->getTop()
+
+			b->incrTimesRun();
+
+			if (b->getTop().getTimesRun() == 2) {
+				//Recalculate task priority
+				b->setTimesRun(0);
+			}
+
+			a->add(b->getTop());
+			b->removeTop();
 		}
 
 	}

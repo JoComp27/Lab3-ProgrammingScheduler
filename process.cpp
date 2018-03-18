@@ -80,6 +80,14 @@ int getHowMuchTime() {
 	return howMuchTime;
 }
 
+void incrTimesRun() {
+	timesRun++;
+}
+
+void setTimesRun(int timesRun) {
+	this->timesRun = timesRun;
+}
+
 };
 
 

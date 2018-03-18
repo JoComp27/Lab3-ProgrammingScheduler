@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <deque>
@@ -26,12 +25,7 @@ Process getTop() {
 }
 
 void removeTop(){
-	if (getLength() > 0) {
 	p.pop_front();
-	}
-	else{
-		std::cout << "Tried to remove an element when the length was empty";
-	}
 }
 
 void sort(){
@@ -54,6 +48,14 @@ bool getIsActive() {
 
 void setIsActive(bool value) {
 	this->isActive = value;
+}
+
+void incrTimesRun() {
+	p.front().incrTimesRun;
+}
+
+void setTimesRun(int timesRun) {
+	p.front().setTimesRun(timesRun);
 }
 
 };
