@@ -30,8 +30,7 @@ deque<Process> listOfProcesses;
 void ReadFile(char* filename);
 int changePriority(Process a);
 int calculateTimeQ(Process a);
-void sheduler(ProcessQueue a, ProcessQueue b);
-
+void sheduler();
 void ProcessInsertion();
 
 int main(int argc, char *argv[])
@@ -49,8 +48,7 @@ int main(int argc, char *argv[])
 	   ProcessInsertion();
 		
 	   //Go through the scheduler algorithm
-	   sheduler(a, b);
-
+	   sheduler();
 
 	   // Add +100 to the clock
 	   currentTime += 100;
@@ -108,7 +106,9 @@ int changePriority(Process a){
 
 	int waitingTime = a.getWaitingTime(currentTime);
 	int bonus = ceil(10*waitingTime / (currentTime - a.getArrivalTime()));
-	return max(100, min(a.getPriority()-bonus + 5 , 139))
+	int new_priority = max(100, min(a.getPriority() - bonus + 5, 139));
+	cout << "Time " << currentTime << ", " << a.getPID() << ", priority updated to " << new_priority;
+		return new_priority;
 
 }
 
@@ -134,9 +134,9 @@ void sheduler(){
 			b.setIsActive(true);
 			b.sort();
 		}
-		else { //List is not empty
+		else { //List A is active and not empty
 
-			if (!taskRunning) {
+			if (!taskRunning) { //If no task is currently running, run one
 				a.incrTimesRun();
 
 				taskEndTime = calculateTimeQ(a.getTop()) + currentTime;
@@ -151,7 +151,7 @@ void sheduler(){
 			}
 			else {
 				if (taskEndTime >= currentTime) {
-					if (lastPass) {
+					if (!lastPass) {
 						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Paused" << endl;
 					}
 					else {
@@ -159,7 +159,7 @@ void sheduler(){
 					}
 
 					if (a.getTop().getTimesRun() == 2) {
-						//Recalculate task priority
+						a.getTop().setPriority(changePriority(a.getTop()));
 						a.setTimesRun(0);
 					}
 
@@ -211,7 +211,7 @@ void sheduler(){
 					}
 
 					if (b.getTop().getTimesRun() == 2) {
-						//Recalculate task priority
+						b.getTop().setPriority(changePriority(b.getTop()));
 						b.setTimesRun(0);
 					}
 

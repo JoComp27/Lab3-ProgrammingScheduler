@@ -95,6 +95,10 @@ int getWaitingTime(int currentTime) {
 
 }
 
+void setPriority(int new_priority) {
+	this->priority = new_priority;
+}
+
 };
 
 
