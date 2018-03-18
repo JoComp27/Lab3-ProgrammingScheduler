@@ -22,7 +22,7 @@ private:
 	int arrivalTime;
 	int timeLeft;
 	int timesRun;
-	int howMuchTime;
+	int timeRun;
 
 public:
 	thread thrd;
@@ -39,18 +39,18 @@ Process() {
 	arrivalTime=0;
 	timeLeft =0;
 	timesRun=0;
-	howMuchTime=0;
+	timeRun=0;
 }
     //parameterized constructor
-Process(string PID, int CPUburst, int priority, int ArrivalTime, int TimeLeft, int TimesRun, int HowMuchTime) {
-		this->PID = PID;
-		this->cpuBurst = CPUburst;
-		this->priority = priority;
-		this->arrivalTime = ArrivalTime;
-		this->timeLeft = TimeLeft;
-		this->timesRun = TimesRun;
-		this->howMuchTime = HowMuchTime;
-	}
+Process(string PID, int CPUburst, int priority, int ArrivalTime) {
+	this->PID = PID;
+	this->cpuBurst = CPUburst;
+	this->priority = priority;
+	this->arrivalTime = ArrivalTime;
+	this->timeLeft = CPUburst;
+	this->timesRun = 0;
+	this->timeRun = 0;
+}
 
 string getPID() {
 	return PID;
@@ -76,16 +76,23 @@ int getTimesRun() {
 	return timesRun;
 }
 
-int getHowMuchTime() {
-	return howMuchTime;
-}
-
 void incrTimesRun() {
 	timesRun++;
 }
 
 void setTimesRun(int timesRun) {
 	this->timesRun = timesRun;
+}
+
+void reduceTimeLeft(int time) {
+	this->timeLeft -= time;
+	this->timeRun += time;
+}
+
+int getWaitingTime(int currentTime) {
+
+	return (currentTime - this->arrivalTime) - timeRun;
+
 }
 
 };

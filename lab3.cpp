@@ -11,6 +11,7 @@
 #include <thread>
 #include <stdlib.h>
 #include <signal.h>
+#include <math.h>
 #include "ProcessQueue.cpp";
 
 using namespace std;
@@ -18,7 +19,9 @@ using namespace std;
 int currentTime = 0;
 bool isDone = false;
 bool itemWasInserted = false;
-
+bool lastPass;
+bool taskRunning;
+int taskEndTime;
 deque<Process> listOfProcesses;
 
  ProcessQueue a = ProcessQueue(true);
@@ -27,7 +30,8 @@ deque<Process> listOfProcesses;
 void ReadFile(char* filename);
 int changePriority(Process a);
 int calculateTimeQ(Process a);
-void sheduler(ProcessQueue* a, ProcessQueue* b);
+void sheduler(ProcessQueue a, ProcessQueue b);
+
 void ProcessInsertion();
 
 int main(int argc, char *argv[])
@@ -45,7 +49,7 @@ int main(int argc, char *argv[])
 	   ProcessInsertion();
 		
 	   //Go through the scheduler algorithm
-
+	   sheduler(a, b);
 
 
 	   // Add +100 to the clock
@@ -98,9 +102,14 @@ void ProcessInsertion() {
 
 
 int changePriority(Process a){
-	thread t1;
-	int idVar = t1.get_id();
-	int killStatus = kill(idVar, 0);
+	//thread t1;
+	//int idVar = t1.get_id();
+	//int killStatus = kill(idVar, 0);
+
+	int waitingTime = a.getWaitingTime(currentTime);
+	int bonus = ceil(10*waitingTime / (currentTime - a.getArrivalTime()));
+	return max(100, min(a.getPriority()-bonus + 5 , 139))
+
 }
 
 int calculateTimeQ(Process a){
@@ -114,63 +123,110 @@ int calculateTimeQ(Process a){
 
 }
 
-void sheduler(ProcessQueue* a, ProcessQueue* b){
+void sheduler(){
 
-	if (a->getIsActive()) {
-		if (a->getLength() == 0 && !itemWasInserted) {
+	if (a.getIsActive()) {
+		if (a.getLength() == 0 && !itemWasInserted) {
 			return;
 		}
-		else if (a->getLength() == 0) {
-			a->setIsActive(false);
-			b->setIsActive(true);
-			b->sort();
+		else if (a.getLength() == 0) {
+			a.setIsActive(false);
+			b.setIsActive(true);
+			b.sort();
 		}
-		else {
+		else { //List is not empty
 
-			//run a->getTop()
+			if (!taskRunning) {
+				a.incrTimesRun();
 
-			a->incrTimesRun();
+				taskEndTime = calculateTimeQ(a.getTop()) + currentTime;
+				lastPass = false;
 
-			if (a->getTop().getTimesRun() == 2) {
-				//Recalculate task priority
-				a->setTimesRun(0);
+				if (taskEndTime > a.getTop().getTimeLeft()) {
+					taskEndTime = a.getTop().getTimeLeft() + currentTime;
+					lastPass = true;
+				}
+
+				taskRunning = true;
 			}
+			else {
+				if (taskEndTime >= currentTime) {
+					if (lastPass) {
+						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Paused" << endl;
+					}
+					else {
+						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Terminated" << endl;
+					}
 
-			b->add(a->getTop());
-			a->removeTop();
+					if (a.getTop().getTimesRun() == 2) {
+						//Recalculate task priority
+						a.setTimesRun(0);
+					}
+
+					if (!lastPass) {
+						b.add(a.getTop());
+					}
+					a.removeTop();
+					taskRunning = false;
+				}
+				else {
+					//runTask
+					a.getTop().reduceTimeLeft(100);
+				}
+			}
 		}
 
 	}
 	else{
-		if(b->getLength() == 0 && !itemWasInserted){
+		if(b.getLength() == 0 && !itemWasInserted){
 			return;
 		}
-		else if(b->getLength() == 0){
-					b->setIsActive(false);
-					a->setIsActive(true);
-					a->sort();
+		else if(b.getLength() == 0){
+					b.setIsActive(false);
+					a.setIsActive(true);
+					a.sort();
 				}
-		else{ //List is not empty
+		else { //List is not empty
 
-			//run b->getTop()
+			if (!taskRunning) {
+				b.incrTimesRun();
 
-			b->incrTimesRun();
+				taskEndTime = calculateTimeQ(b.getTop()) + currentTime;
+				lastPass = false;
 
-			if (b->getTop().getTimesRun() == 2) {
-				//Recalculate task priority
-				b->setTimesRun(0);
+				if (taskEndTime > b.getTop().getTimeLeft()) {
+					taskEndTime = b.getTop().getTimeLeft() + currentTime;
+					lastPass = true;
+				}
+				
+				taskRunning = true;
 			}
+			else {
+				if (taskEndTime >= currentTime) {
+					if (lastPass) {
+						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Paused" << endl;
+					}
+					else {
+						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Terminated" << endl;
+					}
 
-			a->add(b->getTop());
-			b->removeTop();
+					if (b.getTop().getTimesRun() == 2) {
+						//Recalculate task priority
+						b.setTimesRun(0);
+					}
+
+					if (!lastPass) {
+					a.add(b.getTop());
+					}
+				b.removeTop();
+				taskRunning = false;
+				}
+				else {
+					//runTask
+					b.getTop().reduceTimeLeft(100);
+				}
+			}
 		}
-
 	}
 
-}
-
-
-for(int i =0 ; i < waitingtime.size() ; ++i)
-{
-	waitingtime[i+1] += waitingtime[i]
 }
