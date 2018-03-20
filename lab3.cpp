@@ -64,9 +64,7 @@ void DummyTask(int givenTime){
 	processLock.lock();
 	int cycles = givenTime/100;
 	for(int i = 0; i < cycles; i++){
-		for(int j = 0; j < 100; j++){
-			sleep(1);
-		}
+		sleep(100);
 		processLock.unlock();
 		sleep(2);
 		processLock.lock();
@@ -96,7 +94,7 @@ void ProcessInsertion() {
 	}
 }
 
- void ReadFile( char* fileName)
+ void ReadFile(char* fileName)
 {
 
 	ifstream InputFile (fileName); 
@@ -124,8 +122,11 @@ int changePriority(Process a){
 	//int killStatus = kill(idVar, 0);
 
 	int waitingTime = a.getWaitingTime(currentTime);
+
 	int bonus = ceil(10*waitingTime / (currentTime - a.getArrivalTime()));
+
 	int new_priority = max(100, min(a.getPriority() - bonus + 5, 139));
+
 	cout << "Time " << currentTime << ", " << a.getPID() << ", priority updated to " << new_priority;
 		return new_priority;
 
@@ -149,9 +150,15 @@ void sheduler(){
 			return;
 		}
 		else if (a.getLength() == 0) {
+			if(b.getLength() == 0){
+				isDone = true;
+				return
+			}
+			else{
 			a.setIsActive(false);
 			b.setIsActive(true);
 			b.sort();
+			}
 		}
 		else { //List A is active and not empty
 
@@ -204,9 +211,15 @@ void sheduler(){
 			return;
 		}
 		else if(b.getLength() == 0){
+			if(a.getLength == 0){
+				isDone = true;
+				return;
+			}
+			else{
 					b.setIsActive(false);
 					a.setIsActive(true);
 					a.sort();
+			}
 				}
 		else { //List is not empty
 
