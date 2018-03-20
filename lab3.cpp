@@ -22,12 +22,15 @@ bool isDone = false;
 bool itemWasInserted = false;
 bool lastPass;
 bool taskRunning;
+bool threadInitalised = false;
 int taskEndTime;
 int taskGivenTime;
 deque<Process> listOfProcesses;
 
  ProcessQueue a = ProcessQueue(true);
  ProcessQueue b = ProcessQueue(false);
+
+ ofstream output;
 
 void ReadFile(char* filename);
 int changePriority(Process a);
@@ -69,7 +72,7 @@ void DummyTask(int givenTime){
 		sleep(2);
 		processLock.lock();
 	}
-
+	threadInitialised = false;
 	processLock.unlock();
 }
 
@@ -89,6 +92,7 @@ void ProcessInsertion() {
 		}
 
 		cout << "Time " << listOfProcesses.front().getArrivalTime() << ", " << listOfProcesses.front().getPID << ", Arrived" << endl;
+		output << "Time " << listOfProcesses.front().getArrivalTime() << ", " << listOfProcesses.front().getPID << ", Arrived" << endl;
 		listOfProcesses.pop_front();
 
 	}
@@ -130,6 +134,8 @@ int changePriority(Process a){
 	cout << "Time " << currentTime << ", " << a.getPID() << ", priority updated to " << new_priority;
 		return new_priority;
 
+	output << "Time " << currentTime << ", " << a.getPID() << ", priority updated to " << new_priority;
+				return new_priority;
 }
 
 int calculateTimeQ(Process a){
@@ -179,11 +185,13 @@ void sheduler(){
 				if (taskEndTime >= currentTime) {
 					if (!lastPass) {
 						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Paused" << endl;
+						output << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Paused" << endl;
 						a.getTop().reduceTimeLeft(taskGivenTime);
 					}
-					else {
-						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Terminated" << endl;
-					}
+						else {
+							cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Terminated" << endl;
+							output << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Terminated" << endl;
+						}
 
 					if (a.getTop().getTimesRun() == 2) {
 						a.getTop().setPriority(changePriority(a.getTop()));
@@ -193,12 +201,17 @@ void sheduler(){
 					if (!lastPass) {
 						b.add(a.getTop());
 					}
+
 					a.removeTop();
 					taskRunning = false;
 				}
 				else {
 					processLock.unlock();
-					//runTask
+					if(!threadInitialised){ //Only do this once per task
+					threadInitialised = true;
+					b.front().thrd = thread(DummyTask, taskGivenTime);
+					b.front().thrd.join();
+					}
 					sleep(2);
 					processLock.lock();
 				}
@@ -242,10 +255,12 @@ void sheduler(){
 				if (taskEndTime >= currentTime) {
 					if (lastPass) {
 						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Paused" << endl;
+						output << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Paused" << endl;
 						b.getTop().reduceTimeLeft(taskGivenTime);
 					}
 					else {
 						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Terminated" << endl;
+						output << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Terminated" << endl;
 					}
 
 					if (b.getTop().getTimesRun() == 2) {
@@ -261,7 +276,11 @@ void sheduler(){
 				}
 				else {
 					processLock.unlock();
-					//runTask
+					if(!threadInitialised){
+					threadInitialised = true;
+					a.front().thrd = thread(DummyTask, taskGivenTime);
+					a.front().thrd.join();
+					}
 					sleep(2);
 					processLock.lock();
 				}

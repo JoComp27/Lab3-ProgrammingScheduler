@@ -13,7 +13,6 @@ using namespace std;
 
 class Process {
 private:
-	Process * ptr;
 
 //attributes
 	string PID;
