@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <math.h>
+#include <mutex>
 #include "ProcessQueue.cpp";
 
 using namespace std;
@@ -22,6 +23,7 @@ bool itemWasInserted = false;
 bool lastPass;
 bool taskRunning;
 int taskEndTime;
+int taskGivenTime;
 deque<Process> listOfProcesses;
 
  ProcessQueue a = ProcessQueue(true);
@@ -33,6 +35,8 @@ int calculateTimeQ(Process a);
 void sheduler();
 void ProcessInsertion();
 
+mutex processLock;
+
 int main(int argc, char *argv[])
 {
 	///reading the input file
@@ -41,7 +45,7 @@ int main(int argc, char *argv[])
 
    system("PAUSE");
 
-
+   processLock.lock();
 
    while (!isDone) {
 	   //Check if new stuff need to be added to the queue
@@ -56,9 +60,24 @@ int main(int argc, char *argv[])
 
 }
 
+void DummyTask(int givenTime){
+	processLock.lock();
+	int cycles = givenTime/100;
+	for(int i = 0; i < cycles; i++){
+		for(int j = 0; j < 100; j++){
+			sleep(1);
+		}
+		processLock.unlock();
+		sleep(2);
+		processLock.lock();
+	}
+
+	processLock.unlock();
+}
+
 void ProcessInsertion() {
 
-	if (currentTime == listOfProcesses.front().getArrivalTime()) {
+	if (currentTime >= listOfProcesses.front().getArrivalTime()) {
 
 		if (!itemWasInserted) {
 			itemWasInserted = true;
@@ -71,7 +90,7 @@ void ProcessInsertion() {
 			a.add(listOfProcesses.front());
 		}
 
-		cout << "Time " << currentTime << ", " << listOfProcesses.front().getPID << ", Arrived" << endl;
+		cout << "Time " << listOfProcesses.front().getArrivalTime() << ", " << listOfProcesses.front().getPID << ", Arrived" << endl;
 		listOfProcesses.pop_front();
 
 	}
@@ -138,8 +157,8 @@ void sheduler(){
 
 			if (!taskRunning) { //If no task is currently running, run one
 				a.incrTimesRun();
-
-				taskEndTime = calculateTimeQ(a.getTop()) + currentTime;
+				taskGivenTime = calculateTimeQ(a.getTop());
+				taskEndTime = timeGivenTime + currentTime;
 				lastPass = false;
 
 				if (taskEndTime > a.getTop().getTimeLeft()) {
@@ -153,6 +172,7 @@ void sheduler(){
 				if (taskEndTime >= currentTime) {
 					if (!lastPass) {
 						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Paused" << endl;
+						a.getTop().reduceTimeLeft(taskGivenTime);
 					}
 					else {
 						cout << "Time " << taskEndTime << ", " << a.getTop().getPID << ", Terminated" << endl;
@@ -170,8 +190,10 @@ void sheduler(){
 					taskRunning = false;
 				}
 				else {
+					processLock.unlock();
 					//runTask
-					a.getTop().reduceTimeLeft(100);
+					sleep(2);
+					processLock.lock();
 				}
 			}
 		}
@@ -191,7 +213,9 @@ void sheduler(){
 			if (!taskRunning) {
 				b.incrTimesRun();
 
-				taskEndTime = calculateTimeQ(b.getTop()) + currentTime;
+				taskGivenTime = calculateTimeQ(b.getTop());
+				taskEndTime = taskGivenTime + currentTime;
+
 				lastPass = false;
 
 				if (taskEndTime > b.getTop().getTimeLeft()) {
@@ -205,6 +229,7 @@ void sheduler(){
 				if (taskEndTime >= currentTime) {
 					if (lastPass) {
 						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Paused" << endl;
+						b.getTop().reduceTimeLeft(taskGivenTime);
 					}
 					else {
 						cout << "Time " << taskEndTime << ", " << b.getTop().getPID << ", Terminated" << endl;
@@ -222,8 +247,10 @@ void sheduler(){
 				taskRunning = false;
 				}
 				else {
+					processLock.unlock();
 					//runTask
-					b.getTop().reduceTimeLeft(100);
+					sleep(2);
+					processLock.lock();
 				}
 			}
 		}
