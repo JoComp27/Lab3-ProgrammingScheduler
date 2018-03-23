@@ -1,20 +1,22 @@
 /*
- * process.cpp
- *
- *  Created on: Mar 13, 2018
- *      Author: Administrateur
- */
+* process.cpp
+*
+*  Created on: Mar 13, 2018
+*      Author: Administrateur
+*/
+#include "stdafx.h"
 
 #include <iostream>
 #include <string>
 #include <thread>
+#include <utility>
 
 using namespace std;
 
 class Process {
 private:
 
-//attributes
+	//attributes
 	string PID;
 	int cpuBurst;
 	int priority;
@@ -28,75 +30,100 @@ public:
 
 	~Process() //destructor
 	{}
+	/*
+	// Default Constructor
+	Process() {
+		PID = "NULL";
+		thrd; //how to initialize the thread
+		cpuBurst = 0;
+		priority = 0;
+		arrivalTime = 0;
+		timeLeft = 0;
+		timesRun = 0;
+		timeRun = 0;
+	}
+	*/
 
-// Default Constructor
-Process() {
-	PID = "NULL";
-	thrd; //how to initialize the thread
-	cpuBurst =0;
-	priority=0;
-	arrivalTime=0;
-	timeLeft =0;
-	timesRun=0;
-	timeRun=0;
-}
-    //parameterized constructor
-Process(string PID, int CPUburst, int priority, int ArrivalTime) {
-	this->PID = PID;
-	this->cpuBurst = CPUburst;
-	this->priority = priority;
-	this->arrivalTime = ArrivalTime;
-	this->timeLeft = CPUburst;
-	this->timesRun = 0;
-	this->timeRun = 0;
-}
+	Process(const Process& obj) 
+	{
+		PID = obj.PID;
+		cpuBurst = obj.cpuBurst;
+		priority = obj.priority;
+		arrivalTime = obj.arrivalTime;
+		timeLeft = obj.timeLeft;
+		timesRun = obj.timesRun;
+		timeRun = obj.timeRun;
+	};
 
-string getPID() {
-	return PID;
-}
+	Process& operator=(const Process& obj) {
+		if (this != &obj) {
+			PID = obj.PID;
+			cpuBurst = obj.cpuBurst;
+			priority = obj.priority;
+			arrivalTime = obj.arrivalTime;
+			timeLeft = obj.timeLeft;
+			timesRun = obj.timesRun;
+			timeRun = obj.timeRun;
+		}
+		return *this;
+	}
 
-int getCPUBurst() {
-	return cpuBurst;
-}
+	//parameterized constructor
+	Process(std::string PID, int ArrivalTime, int CPUburst, int priority) {
+		this->PID = PID;
+		this->cpuBurst = CPUburst;
+		this->priority = priority;
+		this->arrivalTime = ArrivalTime;
+		this->timeLeft = CPUburst;
+		this->timesRun = 0;
+		this->timeRun = 0;
+	}
 
-int getPriority() {
-	return priority;
-}
+	string getPID() {
+		return PID;
+	}
 
-int getArrivalTime() {
-	return arrivalTime;
-}
+	int getCPUBurst() {
+		return cpuBurst;
+	}
 
-int getTimeLeft() {
-	return timeLeft;
-}
+	int getPriority() {
+		return priority;
+	}
 
-int getTimesRun() {
-	return timesRun;
-}
+	int getArrivalTime() {
+		return arrivalTime;
+	}
 
-void incrTimesRun() {
-	timesRun++;
-}
+	int getTimeLeft() {
+		return timeLeft;
+	}
 
-void setTimesRun(int timesRun) {
-	this->timesRun = timesRun;
-}
+	int getTimesRun() {
+		return timesRun;
+	}
 
-void reduceTimeLeft(int time) {
-	this->timeLeft -= time;
-	this->timeRun += time;
-}
+	void incrTimesRun() {
+		timesRun++;
+	}
 
-int getWaitingTime(int currentTime) {
+	void setTimesRun(int timesRun) {
+		this->timesRun = timesRun;
+	}
 
-	return (currentTime - this->arrivalTime) - timeRun;
+	void reduceTimeLeft(int time) {
+		this->timeLeft -= time;
+		this->timeRun += time;
+	}
 
-}
+	int getWaitingTime(int currentTime) {
+		return (currentTime - arrivalTime) - timeRun;
 
-void setPriority(int new_priority) {
-	this->priority = new_priority;
-}
+	}
+
+	void setPriority(int new_priority) {
+		this->priority = new_priority;
+	}
 
 };
 

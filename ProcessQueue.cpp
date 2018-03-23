@@ -1,61 +1,53 @@
-#include <iostream>
-#include <string>
+#include "stdafx.h"
 #include <deque>
 #include <algorithm>
+#include <iterator>
 #include "process.cpp"
 
-class ProcessQueue{
+using namespace std;
+
+class ProcessQueue {
 
 private:
-bool isActive;
-std::deque<Process> p;
+	bool isActive;
+	
 
 public:
+	std::deque<Process*> p;
+	ProcessQueue(bool isActive) {
+		this->isActive = isActive;
+	}
 
-ProcessQueue(bool isActive){
-	this->isActive = isActive;
-}
+	void add(Process* newProcess) {
+		p.push_back(newProcess);
+	}
 
-void add(Process newProcess){
-	p.push_back(newProcess);
-}
+	Process* getTop() {
+		return p.front();
+	}
 
-Process getTop() {
-	return p.front();
-}
+	void removeTop() {
+		p.pop_front();
+	}
 
-void removeTop(){
-	p.pop_front();
-}
+	int getLength() {
+		return p.size();
+	}
 
-void sort(){
-	std::sort(p.begin(), p.end(), sortingFunction);
-}
+	bool getIsActive() {
+		return isActive;
+	}
 
-bool sortingFunction(Process a, Process b) { return a.getPriority() < b.getPriority(); };
+	void setIsActive(bool value) {
+		this->isActive = value;
+	}
 
-int getLength(){
-	return p.size();
-}
+	void incrTimesRun() {
+		p.front()->incrTimesRun();
+	}
 
-deque<Process> getProcessList(){
-	return p;
-}
-
-bool getIsActive() {
-	return isActive;
-}
-
-void setIsActive(bool value) {
-	this->isActive = value;
-}
-
-void incrTimesRun() {
-	p.front().incrTimesRun;
-}
-
-void setTimesRun(int timesRun) {
-	p.front().setTimesRun(timesRun);
-}
+	void setTimesRun(int timesRun) {
+		p.front()->setTimesRun(timesRun);
+	}
 
 };
