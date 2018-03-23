@@ -111,12 +111,13 @@ public:
 		this->timesRun = timesRun;
 	}
 
-	void reduceTimeLeft(int time) {
+	void reduceTimeLeft(int time) {//When you reduce the time left, increase the time runned
 		this->timeLeft -= time;
 		this->timeRun += time;
 	}
 
-	int getWaitingTime(int currentTime) {
+	int getWaitingTime(int currentTime) { 
+		//Calculate the time waited by substracting the current time from the process's arrival and run time
 		return (currentTime - arrivalTime) - timeRun;
 
 	}
